@@ -227,12 +227,19 @@ class DisciplineDashboard:
         if self.df.empty:
             st.warning("No data for trend analysis.")
             return
+        
         st.markdown('<div class="section-header">📈 Detection Trends</div>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
+        
+        # FIX: Explicitly convert the timestamp column to datetime format
+        self.df['timestamp'] = pd.to_datetime(self.df['timestamp'])
+        
+        # Now the .dt accessor will work perfectly
         self.df['date'] = self.df['timestamp'].dt.date
         daily = self.df.groupby('date').size().reset_index(name='count')
         fig1 = px.line(daily, x='date', y='count', title='Daily Detections')
         st.plotly_chart(fig1, use_container_width=True, key="daily")
+        
         self.df['hour'] = self.df['timestamp'].dt.hour
         hourly = self.df['hour'].value_counts().sort_index().reset_index()
         hourly.columns = ['hour', 'count']
