@@ -16,13 +16,22 @@ import requests
 import os
 
 def download_file(url, filename):
+    # If the file exists but its size is 0 or suspiciously small, delete it
+    if os.path.exists(filename) and os.path.getsize(filename) < 100000:
+        os.remove(filename)
+        
     if not os.path.exists(filename):
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
-
-        with open(filename, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        with st.spinner(f"Downloading {filename} from Hugging Face... Please wait."):
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            
+            temp_filename = filename + ".tmp"
+            with open(temp_filename, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            
+            # Atomically rename only after a fully successful download
+            os.rename(temp_filename, filename)
 # ------------------------------------------------------------
 # Page config
 # ------------------------------------------------------------
