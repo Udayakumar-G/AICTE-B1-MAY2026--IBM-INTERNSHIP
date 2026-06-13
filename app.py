@@ -786,7 +786,7 @@ def main():
     with st.sidebar:
         st.markdown("## 📤 Upload Images")
         uploaded_files = st.file_uploader("Choose images...", type=['jpg', 'jpeg', 'png'],
-                                          accept_multiple_files=True)
+                                          accept_multiple_files=True,key="sidebar_image_uploader")
         if uploaded_files:
             if st.button("Process Uploaded Images"):
                 with st.spinner("Analyzing images..."):
